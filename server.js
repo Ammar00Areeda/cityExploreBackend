@@ -1,56 +1,41 @@
-'use strict'
+'use strict';
 
+// Using express library--------------------//
 const express = require('express');
-const cors = require('cors');
 require('dotenv').config();
-
-
+const cors = require('cors');
 
 const server = express();
+
+const axios = require('axios');
+
+// Modules---------------------------------------//
+const weatherRoute = require('./Modules/weather');
+const moviesRoute = require('./Modules/movies');
+
+const PORT = process.env.PORT;
 server.use(cors());
 
-const weatHerData = require('./data/weather.json')
+// Routes--------------------------------------//
 
-let PORT = process.env.PORT;
-console.log(PORT);
+server.get('/',homeRoute);
+server.get('/test',testRoute);
+server.get('/weather',weatherRoute);
+server.get('/movies',moviesRoute);
+server.get('*',anythingRout);
+    
+// Functions--------------------------------------//
 
+// localhost:3001/
+function homeRoute (req,res) {res.status(200).send('home route')};
 
-server.get('/', (request, response) => {
-    response.send('home')
-})
-
-
-class Forecast {
-    constructor(data, description) {
-        this.data = data;
-        this.description = description;
-    }
-}
-
-server.get('/test', (request, response) => {
-    response.send('api working')
-})
+// localhost:3001/test
+function testRoute (req,res) {res.send('API Server: Active')};
 
 
-// localhost:3001/getWeater?searchQuery= 
-server.get('/getWeater', (request, response) => {
-    let searchQuery = request.query.searchQuery;
-    let data_weather = weatHerData .find((iteam) => {
-        if (iteam.city_name.toLowerCase() === searchQuery.toLowerCase()) {
-            return iteam
-        }
-    })
-    let newArray = data_weather.data.map(element => {
-        return new Forecast(element.datetime, element.weather.description)
-    })
-    response.send(newArray)
-})
+// localhost:3005/ANYTHING
+function anythingRout (req,res) {res.status(404).send('route is not found')};
 
 
-server.get('*', (request, response) => {
-    response.send('404')
-})
-
-server.listen(PORT, () => {
-    console.log(`listen on port ${PORT}`);
-})
+// Listener------------------------------------------------------------//
+server.listen(PORT,()=>{console.log(`Listening on PORT ${PORT}`)})
